@@ -10,6 +10,8 @@ const DEALER = blackJackGame['dealer'];
 
 document.querySelector('#blackjack-hit-button').addEventListener('click', blackJackHit);
 
+document.querySelector('#blackjack-stand-button').addEventListener('click', handleDealer);
+
 document.querySelector('#blackjack-deal-button').addEventListener('click', blackJackDeal);
 
 const hitSound = new Audio('static/sounds/swish.m4a');
@@ -75,4 +77,11 @@ function showScore(activePlayer) {
     } else {
         document.querySelector(activePlayer['scoreSpan']).textContent = activePlayer['score'];
     }
+}
+
+function handleDealer() {
+    let card = chooseRandomCard();
+    showCard(card, DEALER);
+    updateScore(card, DEALER);
+    showScore(DEALER);
 }
