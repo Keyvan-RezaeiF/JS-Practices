@@ -3,6 +3,9 @@ let blackJackGame = {
     'dealer': {'scoreSpan': '#dealer-blackjack-result', 'div': '#dealer-box', 'score': 0},
     'cards': ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'K', 'J', 'Q', 'A'],
     'cardsMap': {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'K': 10, 'J': 10, 'Q': 10, 'A': [1, 11]},
+    'wins': 0,
+    'draws': 0,
+    'losses': 0,
 };
 
 const YOU = blackJackGame['you'];
@@ -42,7 +45,7 @@ function showCard(card, activePlayer) {
 function blackJackDeal() {
     let winner = computeWinner();
     showResult(winner);
-    
+
     let yourImages = document.querySelector('#your-box').querySelectorAll('img');
     let dealerImages = document.querySelector('#dealer-box').querySelectorAll('img');
     document.querySelector(YOU['scoreSpan']).style.color = 'white';
@@ -60,6 +63,9 @@ function blackJackDeal() {
     for (let i = 0; i < dealerImages.length; i++) {
         dealerImages[i].remove();
     }
+
+    document.querySelector('#blackjack-result').textContent = "Let's play!";
+    document.querySelector('#blackjack-result').style.color = 'black';
 }
 
 function updateScore(card, activePlayer) {
@@ -89,6 +95,11 @@ function handleDealer() {
     showCard(card, DEALER);
     updateScore(card, DEALER);
     showScore(DEALER);
+
+    if (DEALER['score'] > 15) {
+        let winner = computeWinner();
+        showResult(winner);
+    }
 }
 
 function computeWinner() {
@@ -97,15 +108,18 @@ function computeWinner() {
     if (YOU['score'] <= 21) {
         if (YOU['score'] > DEALER['score'] || DEALER['score'] > 21) {
             winner = YOU;
+            blackJackGame['wins']++
         } else if (YOU['score'] < DEALER['score']) {
             winner = DEALER;
+            blackJackGame['losses']++
         } else if (YOU['score'] === DEALER['score']) {
-            console.log('DRAW!');
+            blackJackGame['draws']++
         }
     } else if (YOU['score'] > 21 && DEALER['score'] <= 21) {
         winner = DEALER;
+        blackJackGame['losses']++
     } else if (YOU['score'] > 21 && DEALER['score'] > 21) {
-        console.log('DRAW!');
+        blackJackGame['draws']++
     }
 
     return winner;
@@ -129,4 +143,8 @@ function showResult(winner) {
 
     document.querySelector('#blackjack-result').textContent = message;
     document.querySelector('#blackjack-result').style.color = messageColor;
+
+    document.querySelector('#wins').textContent = blackJackGame['wins'];
+    document.querySelector('#draws').textContent = blackJackGame['draws'];
+    document.querySelector('#losses').textContent = blackJackGame['losses'];
 }
