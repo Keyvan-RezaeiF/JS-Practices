@@ -15,6 +15,8 @@ document.querySelector('#blackjack-stand-button').addEventListener('click', hand
 document.querySelector('#blackjack-deal-button').addEventListener('click', blackJackDeal);
 
 const hitSound = new Audio('static/sounds/swish.m4a');
+const winSound = new Audio('static/sounds/cash.mp3');
+const lossSound = new Audio('static/sounds/aww.mp3');
 
 function blackJackHit() {
     let card = chooseRandomCard();
@@ -38,6 +40,9 @@ function showCard(card, activePlayer) {
 }
 
 function blackJackDeal() {
+    let winner = computeWinner();
+    showResult(winner);
+    
     let yourImages = document.querySelector('#your-box').querySelectorAll('img');
     let dealerImages = document.querySelector('#dealer-box').querySelectorAll('img');
     document.querySelector(YOU['scoreSpan']).style.color = 'white';
@@ -84,4 +89,44 @@ function handleDealer() {
     showCard(card, DEALER);
     updateScore(card, DEALER);
     showScore(DEALER);
+}
+
+function computeWinner() {
+    let winner;
+
+    if (YOU['score'] <= 21) {
+        if (YOU['score'] > DEALER['score'] || DEALER['score'] > 21) {
+            winner = YOU;
+        } else if (YOU['score'] < DEALER['score']) {
+            winner = DEALER;
+        } else if (YOU['score'] === DEALER['score']) {
+            console.log('DRAW!');
+        }
+    } else if (YOU['score'] > 21 && DEALER['score'] <= 21) {
+        winner = DEALER;
+    } else if (YOU['score'] > 21 && DEALER['score'] > 21) {
+        console.log('DRAW!');
+    }
+
+    return winner;
+}
+
+function showResult(winner) {
+    let message, messageColor;
+
+    if (winner === YOU) {
+        message = 'You won!';
+        messageColor = 'green';
+        winSound.play();
+    } else if (winner === DEALER) {
+        message = 'You lost!';
+        messageColor = 'red';
+        lossSound.play();
+    } else {
+        message = 'You drew!';
+        messageColor = 'black';
+    }
+
+    document.querySelector('#blackjack-result').textContent = message;
+    document.querySelector('#blackjack-result').style.color = messageColor;
 }
